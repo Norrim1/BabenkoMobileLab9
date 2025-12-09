@@ -190,9 +190,19 @@ fun DateField(
 ) {
     var datePickerVisible by rememberSaveable { mutableStateOf(false) }
 
+    val datePickerState = rememberDatePickerState()
+    try {
+        if (dateString.isNotBlank()) {
+            val initialDate = LocalDate.parse(dateString)
+            val initialMillis = initialDate.atStartOfDay(ZoneId.systemDefault())
+                .toInstant().toEpochMilli()
+            datePickerState.selectedDateMillis = initialMillis
+        }
+    } catch (_: Exception) {}
+
     OutlinedTextField(
         value = dateString,
-        onValueChange = {},
+        onValueChange = {}, // только через picker
         label = label,
         leadingIcon = {
             Icon(
@@ -200,49 +210,28 @@ fun DateField(
                 contentDescription = stringResource(R.string.select_date_content_desc)
             )
         },
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-        ),
         modifier = modifier.clickable(enabled = enabled) { datePickerVisible = true },
         enabled = enabled,
-        singleLine = true,
-        readOnly = true
+        readOnly = true,
+        singleLine = true
     )
 
     if (datePickerVisible) {
-        val datePickerState = rememberDatePickerState()
-        try {
-            val initialDate = LocalDate.parse(dateString)
-            val initialMillis = initialDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            datePickerState.selectedDateMillis = initialMillis
-        } catch (e: Exception) {
-        }
-
         DatePickerDialog(
             onDismissRequest = { datePickerVisible = false },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        val selectedMillis = datePickerState.selectedDateMillis
-                        if (selectedMillis != null) {
-                            val selectedLocalDate = Instant.ofEpochMilli(selectedMillis)
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate()
-                            val formattedDate = selectedLocalDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
-                            onDateChange(formattedDate)
-                        }
-                        datePickerVisible = false
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val selectedLocalDate = Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                        onDateChange(selectedLocalDate.format(DateTimeFormatter.ISO_LOCAL_DATE))
                     }
-                ) {
-                    Text(stringResource(R.string.yes))
-                }
+                    datePickerVisible = false
+                }) { Text(stringResource(R.string.yes)) }
             },
             dismissButton = {
-                TextButton(
-                    onClick = { datePickerVisible = false }
-                ) {
+                TextButton(onClick = { datePickerVisible = false }) {
                     Text(stringResource(R.string.no))
                 }
             }
@@ -267,3 +256,4 @@ private fun TaskEntryScreenPreview() {
         )
     }
 }
+

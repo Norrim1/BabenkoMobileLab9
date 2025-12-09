@@ -15,10 +15,10 @@ interface TaskDao {
     suspend fun insert(task: Task)
 
     @Query("SELECT * FROM tasks ORDER BY date")
-    fun getAllTasks(): Flow<List<Task>>
+    fun getAllTasks(): Flow<List<Task?>>
 
     @Query("SELECT * from tasks WHERE id = :id")
-    fun getTask(id: Int): Flow<Task>
+    fun getTask(id: Int): Flow<Task?>
 
     @Update
     suspend fun update(task: Task)

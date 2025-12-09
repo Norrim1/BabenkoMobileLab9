@@ -30,9 +30,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tasks.TasksTopAppBar
 import com.example.tasks.R
 import com.example.tasks.data.Task
+import com.example.tasks.ui.AppViewModelProvider
 import com.example.tasks.ui.navigation.NavigationDestination
 import com.example.tasks.ui.theme.TasksTheme
 import java.time.LocalDate
@@ -42,17 +44,16 @@ object HomeDestination : NavigationDestination {
     override val titleRes = R.string.app_name
 }
 
-/**
- * Entry route for Home screen
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navigateToItemEntry: () -> Unit,
     navigateToItemUpdate: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val uiState = viewModel.uiState
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -77,7 +78,7 @@ fun HomeScreen(
         },
     ) { innerPadding ->
         HomeBody(
-            taskList = listOf(), // Замените на реальные данные
+            taskList = uiState.taskList,
             onItemClick = navigateToItemUpdate,
             modifier = modifier,
             contentPadding = innerPadding,
@@ -127,30 +128,6 @@ private fun HomeBody(
             }
         }
     }
-}
-
-@Composable
-private fun TaskList(
-    taskList: List<Task>,
-    onTaskClick: (Task) -> Unit,
-    contentPadding: PaddingValues,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = contentPadding
-    ) {
-        items(items = taskList, key = { it.id }) { task ->
-            ToDoTask(task = task,
-                modifier = Modifier
-                    .padding(10.dp))
-                    .clickable { onTaskClick(task) }
-        }
-    }
-}
-
-private fun Unit.clickable(function: () -> Unit) {
-    TODO("Not yet implemented")
 }
 
 @Composable
