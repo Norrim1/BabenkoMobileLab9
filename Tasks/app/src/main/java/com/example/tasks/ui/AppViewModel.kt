@@ -1,15 +1,11 @@
 package com.example.tasks.ui
 
-import android.app.Application
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.tasks.TasksApplication
-import com.example.tasks.data.TasksRepository
 import com.example.tasks.ui.home.HomeViewModel
 import com.example.tasks.ui.task.TaskDetailsViewModel
 import com.example.tasks.ui.task.TaskEditViewModel
@@ -19,17 +15,18 @@ object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
             TaskEditViewModel(
-                this.createSavedStateHandle()
+                this.createSavedStateHandle(),
+                TasksApplication().container.tasksRepository
             )
         }
-        // Initializer for ItemEntryViewModel
         initializer {
             TaskEntryViewModel(TasksApplication().container.tasksRepository)
         }
 
         initializer {
             TaskDetailsViewModel(
-                this.createSavedStateHandle()
+                this.createSavedStateHandle(),
+                TasksApplication().container.tasksRepository
             )
         }
 

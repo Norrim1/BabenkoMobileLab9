@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tasks.TasksTopAppBar
 import com.example.tasks.R
@@ -34,6 +33,8 @@ fun TaskEditScreen(
     modifier: Modifier = Modifier,
     viewModel: TaskEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val taskUiState = viewModel.taskUiState
+
     Scaffold(
         topBar = {
             TasksTopAppBar(
@@ -45,9 +46,11 @@ fun TaskEditScreen(
         modifier = modifier
     ) { innerPadding ->
         TaskEntryBody(
-            taskUiState = viewModel.taskUiState,
-            onTaskValueChange = { },
-            onSaveClick = { },
+            taskUiState = taskUiState,
+            onTaskValueChange = { viewModel.updateUiState(it) },
+            onSaveClick = {
+                viewModel.updateTask()
+                navigateBack() },
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),

@@ -32,14 +32,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tasks.TasksTopAppBar
 import com.example.tasks.R
 import com.example.tasks.data.Task
+import com.example.tasks.ui.AppViewModelProvider
 import com.example.tasks.ui.navigation.NavigationDestination
 import com.example.tasks.ui.theme.TasksTheme
 
@@ -55,8 +55,12 @@ object TaskDetailsDestination : NavigationDestination {
 fun TaskDetailsScreen(
     navigateToEditTask: (Int) -> Unit,
     navigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: TaskDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
+    val uiState = viewModel.uiState
+    val task = uiState.taskDetails.toTask()
+
     Scaffold(
         topBar = {
             TasksTopAppBar(
@@ -67,7 +71,7 @@ fun TaskDetailsScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navigateToEditTask(0) },
+                onClick = { navigateToEditTask(task.id) },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(20.dp)
             ) {
@@ -80,9 +84,9 @@ fun TaskDetailsScreen(
         modifier = modifier
     ) { innerPadding ->
         TaskDetailsBody(
-            taskDetailsUiState = TaskUiState(),
-            onMarkComplete = { },
-            onDelete = { },
+            taskDetailsUiState = uiState,
+            onMarkComplete = { viewModel.markComplete() },
+            onDelete = { viewModel.deleteTask(navigateBack) },
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -96,7 +100,7 @@ fun TaskDetailsScreen(
 
 @Composable
 private fun TaskDetailsBody(
-    taskDetailsUiState: TaskUiState,
+    taskDetailsUiState: TaskDetailsUiState,
     onMarkComplete: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
@@ -215,18 +219,4 @@ private fun DeleteConfirmationDialog(
             }
         }
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TaskDetailsScreenPreview() {
-    TasksTheme {
-        TaskDetailsBody(
-            TaskUiState(
-                taskDetails = TaskDetails(1, "Sample Task", java.time.LocalDate.now().toString(), "This is a sample task description.")
-            ),
-            onMarkComplete = {},
-            onDelete = {}
-        )
-    }
 }
