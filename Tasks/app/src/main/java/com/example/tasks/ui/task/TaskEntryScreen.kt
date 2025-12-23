@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
@@ -32,22 +31,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tasks.TasksTopAppBar
 import com.example.tasks.R
-import com.example.tasks.data.Task
 import com.example.tasks.ui.AppViewModelProvider
 import com.example.tasks.ui.navigation.NavigationDestination
-import com.example.tasks.ui.theme.TasksTheme // Или TasksTheme
+import com.example.tasks.ui.theme.TasksTheme
 import java.time.LocalDate
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import androidx.compose.runtime.State
 
 object TaskEntryDestination : NavigationDestination {
     override val route = "task_entry"
@@ -184,9 +179,9 @@ fun TaskInputForm(
 fun DateField(
     dateString: String,
     onDateChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
     enabled: Boolean = true,
-    modifier: Modifier = Modifier,
 ) {
     var datePickerVisible by rememberSaveable { mutableStateOf(false) }
 

@@ -31,7 +31,7 @@ object AppViewModelProvider {
         }
 
         initializer {
-            HomeViewModel(TasksApplication().container.tasksRepository)
+            HomeViewModel(TasksApplication().container.tasksRepository, TasksApplication().container.settingsRepository)
         }
     }
 }

@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface TaskDao {
@@ -25,4 +26,19 @@ interface TaskDao {
 
     @Delete
     suspend fun delete(task: Task)
+
+    @Query("SELECT * FROM tasks WHERE date = :date")
+    fun getTasksByDate(date: LocalDate?): Flow<List<Task>>
+
+    @Query("SELECT * FROM tasks ORDER BY date ASC")
+    fun tasksByDateAsc(): Flow<List<Task>>
+
+    @Query("SELECT * FROM tasks ORDER BY date DESC")
+    fun tasksByDateDesc(): Flow<List<Task>>
+
+    @Query("SELECT * FROM tasks ORDER BY name ASC")
+    fun tasksByNameAsc(): Flow<List<Task>>
+
+    @Query("SELECT * FROM tasks ORDER BY name DESC")
+    fun tasksByNameDesc(): Flow<List<Task>>
 }
